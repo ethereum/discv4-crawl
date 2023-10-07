@@ -1,4 +1,4 @@
-FROM golang:latest
+FROM golang:1.21
 
 ENV CRAWL_GIT_REPO=https://github.com/skylenet/discv4-dns-lists.git \
     CRAWL_GIT_BRANCH=master \
@@ -25,7 +25,9 @@ ENV CRAWL_GIT_REPO=https://github.com/skylenet/discv4-dns-lists.git \
     PROMETHEUS_METRICS_ENABLED=true \
     PROMETHEUS_METRICS_LISTEN=0.0.0.0:9100
 
-RUN apt-get update && apt-get install -y --no-install-recommends git curl jq
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends git curl jq \
+    && rm -rf /var/lib/apt/lists/*
 
 EXPOSE 9100
 WORKDIR /crawler

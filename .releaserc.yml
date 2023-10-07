@@ -1,0 +1,14 @@
+branches:
+  - main
+  - name: beta-*
+    prerelease: true
+  - name: alpha-*
+    prerelease: true
+plugins:
+  - "@semantic-release/commit-analyzer"
+  - "@semantic-release/release-notes-generator"
+  - "@semantic-release/changelog"
+  - - "@semantic-release/github"
+    - assets:
+        - "build/discv4-crawl"
+  - "@semantic-release/git"

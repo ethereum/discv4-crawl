@@ -1,0 +1,9 @@
+.git
+.github
+
+scripts/
+
+Dockerfile
+
+CHANGELOG.md
+README.md

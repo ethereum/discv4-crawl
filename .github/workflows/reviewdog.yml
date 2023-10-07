@@ -1,0 +1,46 @@
+name: reviewdog
+
+on:
+  push:
+    branches:
+      - main
+      - beta
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - labeled
+
+jobs:
+  golangci-lint:
+    name: golangci-lint
+    runs-on: ubuntu-latest
+
+    if: github.actor != 'dependabot[bot]' || contains(github.event.pull_request.labels.*.name, 'safe-to-test')
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: reviewdog/action-golangci-lint@v2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          go_version_file: go.mod
+          reporter: github-check
+          filter_mode: file
+          fail_on_error: true
+          #golangci_lint_version: v${{ steps.asdf-version.outputs.ASDF_VERSION }}
+
+  hadolint:
+    name: hadolint
+    runs-on: ubuntu-latest
+
+    if: github.actor != 'dependabot[bot]' || contains(github.event.pull_request.labels.*.name, 'safe-to-test')
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: hadolint
+        uses: reviewdog/action-hadolint@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-check
+          fail_on_error: true

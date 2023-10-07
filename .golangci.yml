@@ -1,0 +1,73 @@
+linters-settings:
+  govet:
+    settings:
+      printf:
+        funcs:
+          - (github.com/golangci/golangci-lint/pkg/logutils.Log).Infof
+          - (github.com/golangci/golangci-lint/pkg/logutils.Log).Warnf
+          - (github.com/golangci/golangci-lint/pkg/logutils.Log).Errorf
+          - (github.com/golangci/golangci-lint/pkg/logutils.Log).Fatalf
+  revive:
+    min-confidence: 0
+  gocyclo:
+    min-complexity: 10
+  maligned:
+    suggest-new: true
+  dupl:
+    threshold: 100
+  goconst:
+    min-len: 5
+    min-occurrences: 2
+  depguard:
+    list-type: blacklist
+    packages:
+      # logging is allowed only by logutils.Log, logrus
+      # is allowed to use only in logutils package
+      - github.com/sirupsen/logrus
+  misspell:
+    locale: US
+  lll:
+    line-length: 140
+  gocritic:
+    enabled-tags:
+      - performance
+      - style
+      - experimental
+    disabled-checks:
+      - wrapperFunc
+      - hugeParam
+
+linters:
+  enable:
+    - goconst
+    - gocritic
+    - revive
+    - govet
+    - misspell
+    - stylecheck
+    - unconvert
+    - unparam
+    - gofmt
+  disable:
+    - gochecknoinits
+
+issues:
+  max-same-issues: 10
+  exclude-use-default: true
+
+run:
+  deadline: 20m
+  skip-dirs:
+    - .gocache
+    - pkg/go-ethereum
+    - build
+    - public
+    - mock
+    - scripts
+    - vendor
+    - tests
+  skip-files:
+    - ".*\\.pb(\\.gw)?\\.go$"
+    - ".*_test.go$"
+    - pkg/toolkit/app/http/handler/dashboard/genstatic/gen.go
+    - pkg/toolkit/app/http/handler/swagger/genstatic/gen.go
