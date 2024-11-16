@@ -71,11 +71,6 @@ generate_list() {
   filter_list mainnet les   -limit 200  -les-server
   filter_list mainnet snap  -limit 500  -snap
 
-  # Goerli
-  filter_list goerli all    -limit 500
-  filter_list goerli les    -limit 50   -les-server
-  filter_list goerli snap   -limit 50   -snap
-
   # Sepolia
   filter_list sepolia all   -limit 250
   filter_list sepolia les   -limit 25   -les-server
