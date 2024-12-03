@@ -71,11 +71,6 @@ generate_list() {
   filter_list mainnet les   -limit 200  -les-server
   filter_list mainnet snap  -limit 500  -snap
 
-  # Goerli
-  filter_list goerli all    -limit 500
-  filter_list goerli les    -limit 50   -les-server
-  filter_list goerli snap   -limit 50   -snap
-
   # Sepolia
   filter_list sepolia all   -limit 250
   filter_list sepolia les   -limit 25   -les-server
@@ -119,7 +114,8 @@ git_push_crawler_output() {
 }
 
 publish_influx_metrics() {
-  echo -n "" > metrics.txt
+  local status=$1
+  echo "devp2p_discv4.dns_node_crawl_status value=${status}i" > metrics.txt
   for D in *."${CRAWL_DNS_DOMAIN}"; do
     if [ -d "${D}" ]; then
       LEN=$(jq length < "${D}/nodes.json")
@@ -141,8 +137,9 @@ init_prometheus_metrics() {
 }
 
 publish_prometheus_metrics() {
+  local status=$1
   prometheus_metrics_file="${prometheus_metrics_dir}/metrics"
-  echo -n "" > "${prometheus_metrics_file}"
+  echo "devp2p_discv4_dns_nodes_crawl_status ${status}" > "${prometheus_metrics_file}"
   for D in *."${CRAWL_DNS_DOMAIN}"; do
     if [ -d "${D}" ]; then
       LEN=$(jq length < "${D}/nodes.json")
@@ -160,40 +157,45 @@ git_update_repo "$CRAWL_GIT_REPO" output "$CRAWL_GIT_BRANCH"
 PATH="$geth_src:$PATH"
 cd output
 
-init_prometheus_metrics
+if [ "$PROMETHEUS_METRICS_ENABLED" = true ] ; then
+  init_prometheus_metrics
+fi
 
 while true
 do
+  # Initialize crawl status as success
+  crawl_status=1
+
   # Pull changes from go-ethereum.
-  update_devp2p_tool
+  update_devp2p_tool || crawl_status=0
 
   # Generate node lists
-  generate_list
+  generate_list || crawl_status=0
 
   # Sign lists
   if [ -f "$CRAWL_DNS_SIGNING_KEY" ]; then
-    sign_lists
+    sign_lists || crawl_status=0
   fi
 
   # Push changes back to git repo
   if [ "$CRAWL_GIT_PUSH" = true ] ; then
-    git_push_crawler_output
+    git_push_crawler_output || crawl_status=0
   fi
 
   # Publish DNS records
   if [ "$CRAWL_DNS_PUBLISH_CLOUDFLARE" = true ] ; then
-    publish_dns_cloudflare
+    publish_dns_cloudflare || crawl_status=0
   fi
   if [ "$CRAWL_DNS_PUBLISH_ROUTE53" = true ] ; then
-    publish_dns_route53
+    publish_dns_route53 || crawl_status=0
   fi
 
   # Publish metrics
   if [ "$INFLUXDB_METRICS_ENABLED" = true ] ; then
-    publish_influx_metrics
+    publish_influx_metrics $crawl_status
   fi
   if [ "$PROMETHEUS_METRICS_ENABLED" = true ] ; then
-    publish_prometheus_metrics
+    publish_prometheus_metrics $crawl_status
   fi
 
   if [ "$CRAWL_RUN_ONCE" = true ] ; then
