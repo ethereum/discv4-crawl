@@ -59,32 +59,32 @@ filter_list() {
   name="$2"
   shift 2
 
-  mkdir -p "${name}.${network}.${CRAWL_DNS_DOMAIN}"
-  devp2p nodeset filter all.json -eth-network "$network" $@ > "${name}.${network}.${CRAWL_DNS_DOMAIN}/nodes.json"
+  mkdir -p "${name}.${network}.${CRAWL_DNS_DOMAIN}" || return 1
+  devp2p nodeset filter all.json -eth-network "$network" $@ > "${name}.${network}.${CRAWL_DNS_DOMAIN}/nodes.json" || return 1
 }
 
 generate_list() {
-  devp2p discv4 crawl -timeout "$CRAWL_TIMEOUT" all.json
+  devp2p discv4 crawl -timeout "$CRAWL_TIMEOUT" all.json || return 1
 
   # Mainnet
-  filter_list mainnet all   -limit 3000
-  filter_list mainnet les   -limit 200  -les-server
-  filter_list mainnet snap  -limit 500  -snap
+  filter_list mainnet all   -limit 3000 || return 1
+  filter_list mainnet les   -limit 200  -les-server || return 1
+  filter_list mainnet snap  -limit 500  -snap || return 1
 
   # Sepolia
-  filter_list sepolia all   -limit 250
-  filter_list sepolia les   -limit 25   -les-server
-  filter_list sepolia snap  -limit 25   -snap
+  filter_list sepolia all   -limit 250 || return 1
+  filter_list sepolia les   -limit 25   -les-server || return 1
+  filter_list sepolia snap  -limit 25   -snap || return 1
 
   # Holesky
-  filter_list holesky all   -limit 250
-  filter_list holesky snap  -limit 25   -snap
+  filter_list holesky all   -limit 250 || return 1
+  filter_list holesky snap  -limit 25   -snap || return 1
 }
 
 sign_lists() {
   for D in *."${CRAWL_DNS_DOMAIN}"; do
     if [ -d "${D}" ]; then
-      echo "" | devp2p dns sign "${D}" "$CRAWL_DNS_SIGNING_KEY"
+      echo "" | devp2p dns sign "${D}" "$CRAWL_DNS_SIGNING_KEY" || return 1
     fi
   done
 }
@@ -92,7 +92,7 @@ sign_lists() {
 publish_dns_cloudflare() {
   for D in *."${CRAWL_DNS_DOMAIN}"; do
     if [ -d "${D}" ]; then
-      devp2p dns to-cloudflare -zoneid "$CLOUDFLARE_ZONE_ID" "${D}"
+      devp2p dns to-cloudflare -zoneid "$CLOUDFLARE_ZONE_ID" "${D}" || return 1
     fi
   done
 }
@@ -100,16 +100,16 @@ publish_dns_cloudflare() {
 publish_dns_route53() {
   for D in *."${CRAWL_DNS_DOMAIN}"; do
     if [ -d "${D}" ]; then
-      devp2p dns to-route53 -zone-id "$ROUTE53_ZONE_ID" "${D}"
+      devp2p dns to-route53 -zone-id "$ROUTE53_ZONE_ID" "${D}" || return 1
     fi
   done
 }
 
 git_push_crawler_output() {
   if [ -n "$(git status --porcelain)" ]; then
-    git add all.json ./*."${CRAWL_DNS_DOMAIN}"/*.json
-    git commit --message "automatic update: crawl time $CRAWL_TIMEOUT"
-    git push origin "$CRAWL_GIT_BRANCH"
+    git add all.json ./*."${CRAWL_DNS_DOMAIN}"/*.json || return 1
+    git commit --message "automatic update: crawl time $CRAWL_TIMEOUT" || return 1
+    git push origin "$CRAWL_GIT_BRANCH" || return 1
   fi
 }
 
@@ -133,7 +133,7 @@ publish_influx_metrics() {
 init_prometheus_metrics() {
   go install -v github.com/projectdiscovery/simplehttpserver/cmd/simplehttpserver@v0.0.6
   simplehttpserver -listen "${PROMETHEUS_METRICS_LISTEN}" -path "${prometheus_metrics_dir}" -silent &
-  publish_prometheus_metrics
+  publish_prometheus_metrics 0 # Init status with 0, which means it hasn't run yet
 }
 
 publish_prometheus_metrics() {
