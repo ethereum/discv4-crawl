@@ -115,7 +115,7 @@ git_push_crawler_output() {
 
 publish_influx_metrics() {
   local status=$1
-  echo "devp2p_discv4.dns_node_crawl_status value=${status}i" > metrics.txt
+  echo "devp2p_discv4.crawl_status value=${status}i" > metrics.txt
   for D in *."${CRAWL_DNS_DOMAIN}"; do
     if [ -d "${D}" ]; then
       LEN=$(jq length < "${D}/nodes.json")
@@ -139,7 +139,7 @@ init_prometheus_metrics() {
 publish_prometheus_metrics() {
   local status=$1
   prometheus_metrics_file="${prometheus_metrics_dir}/metrics"
-  echo "devp2p_discv4_dns_nodes_crawl_status ${status}" > "${prometheus_metrics_file}"
+  echo "devp2p_discv4_crawl_status ${status}" > "${prometheus_metrics_file}"
   for D in *."${CRAWL_DNS_DOMAIN}"; do
     if [ -d "${D}" ]; then
       LEN=$(jq length < "${D}/nodes.json")
