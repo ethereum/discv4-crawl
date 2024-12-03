@@ -18,8 +18,6 @@ This repository contains the scripts used to automatically generate the list of 
 
 ## Running with docker
 
-
-
 ### Environment variables
 
 Name | Default | Description
@@ -68,3 +66,9 @@ $ docker run -it \
     -e CRAWL_GIT_PUSH=true \ # Specify that we want to push the changes
     ghcr.io/ethereum/discv4-crawl:master
 ```
+
+## Development
+
+
+### Contributing with a Pull Request
+This repository uses [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) for commit messages, so that we can automatically generate release and the respective changelog. Make sure to follow the specification on the PR title.
