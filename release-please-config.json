@@ -6,7 +6,7 @@
   "bump-minor-pre-major": true,
   "packages": {
     ".": {
-      "package-name": "discv4-crawler"
+      "package-name": "discv4-crawl"
     }
   }
 }
