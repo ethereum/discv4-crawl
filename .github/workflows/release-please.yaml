@@ -1,0 +1,20 @@
+name: release-please
+
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: googleapis/release-please-action@d1a8f221d7723166f48a584aebba00ef3f6febec
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }} # Should be changed to a PAT, so that we can trigger a workflow on tag push from the CI
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
