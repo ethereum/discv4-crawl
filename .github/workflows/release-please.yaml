@@ -15,6 +15,6 @@ jobs:
     steps:
       - uses: googleapis/release-please-action@d1a8f221d7723166f48a584aebba00ef3f6febec
         with:
-          token: ${{ secrets.GITHUB_TOKEN }} # Should be changed to a PAT, so that we can trigger a workflow on tag push from the CI
+          token: ${{ secrets.PAT }} # Should be changed to a PAT, so that we can trigger a workflow on tag push from the CI
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
