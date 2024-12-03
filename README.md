@@ -24,7 +24,7 @@ This repository contains the scripts used to automatically generate the list of 
 
 Name | Default | Description
 -----| ------- | -------
-`CRAWL_GIT_REPO` | `https://github.com/skylenet/discv4-dns-lists.git` | Git repository `used to clone and push the node list
+`CRAWL_GIT_REPO` | `https://github.com/ethereum/discv4-dns-lists.git` | Git repository `used to clone and push the node list
 `CRAWL_GIT_BRANCH` | `master` | Git branch used for the fetch and push
 `CRAWL_GIT_PUSH` | `false` | When set to `true`, it will push the node lists to the git repository
 `CRAWL_GIT_USER` | `crawler` | Git username. Will appear in the commit messages.
@@ -64,7 +64,7 @@ $ docker run -it \
     -v "$HOME/.ssh/crawler:/root/.ssh" \  # Needed if you use git via SSH
     -v "$HOME/secrets/secret-signing-key.json:/secrets/key.json" \ # Only needed if you want to sign the node lists
     -e CRAWL_TIMEOUT=10m \ # Specify your custom timeout
-    -e CRAWL_GIT_REPO=git@github.com:skylenet/discv4-dns-lists.git \ # Use SSH instead of HTTPS
+    -e CRAWL_GIT_REPO=git@github.com:ethereum/discv4-dns-lists.git \ # Use SSH instead of HTTPS
     -e CRAWL_GIT_PUSH=true \ # Specify that we want to push the changes
-    skylenet/discv4-crawl
+    ghcr.io/ethereum/discv4-crawl:master
 ```
