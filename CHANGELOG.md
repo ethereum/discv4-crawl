@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/ethereum/discv4-crawl/compare/0.1.0...0.2.0) (2025-03-19)
+
+
+### Features
+
+* add hoodi testnet ([#18](https://github.com/ethereum/discv4-crawl/issues/18)) ([314aa39](https://github.com/ethereum/discv4-crawl/commit/314aa3979ca6b9506ba80795b2615f04de11a4e2))
+
 ## [0.1.0](https://github.com/ethereum/discv4-crawl/compare/0.0.1...0.1.0) (2024-12-03)
 
 
