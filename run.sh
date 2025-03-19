@@ -79,6 +79,10 @@ generate_list() {
   # Holesky
   filter_list holesky all   -limit 250 || return 1
   filter_list holesky snap  -limit 25   -snap || return 1
+
+  # Hoodi
+  filter_list hoodi all   -limit 500 || return 1
+  filter_list hoodi snap  -limit 100   -snap || return 1
 }
 
 sign_lists() {
